@@ -2,6 +2,7 @@
 //
 // pgAdmin III - PostgreSQL Tools
 //
+// Copyright (C) 2017, Mettenmeier GmbH
 // Copyright (C) 2002 - 2016, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -116,24 +117,60 @@ bool pgSequence::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 
 void pgSequence::UpdateValues()
 {
-	pgSet *sequence = ExecuteSet(
-	                      wxT("SELECT last_value, min_value, max_value, cache_value, is_cycled, increment_by, is_called\n")
-	                      wxT("  FROM ") + GetQuotedFullIdentifier());
-	if (sequence)
+	pgSet *sequence;
+	if (GetConnection()->BackendMinimumVersion(10, 0))
 	{
-		lastValue = sequence->GetLongLong(wxT("last_value"));
-		minValue = sequence->GetLongLong(wxT("min_value"));
-		maxValue = sequence->GetLongLong(wxT("max_value"));
-		cacheValue = sequence->GetLongLong(wxT("cache_value"));
-		increment = sequence->GetLongLong(wxT("increment_by"));
-		cycled = sequence->GetBool(wxT("is_cycled"));
-		called = sequence->GetBool(wxT("is_called"));
-		if (called)
-			nextValue = lastValue + increment;
-		else
-			nextValue = lastValue;
+		sequence = ExecuteSet(
+		                      wxT("SELECT last_value, is_called\n")
+		                      wxT("  FROM ") + GetQuotedFullIdentifier());
+		if (sequence)
+		{
+			lastValue = sequence->GetLongLong(wxT("last_value"));
+			called = sequence->GetBool(wxT("is_called"));
+			if (called)
+				nextValue = lastValue + increment;
+			else
+				nextValue = lastValue;
 
-		delete sequence;
+			delete sequence;
+		}
+
+		sequence = ExecuteSet(
+		               wxT("SELECT min_value, max_value, cache_size, cycle, increment_by\n")
+                       wxT("  FROM pg_sequences where schemaname = '") + this->GetSchema()->GetQuotedIdentifier() +
+                       wxT("' and sequencename = '") + this->GetQuotedIdentifier() + wxT("'"));
+		if (sequence)
+		{
+			minValue = sequence->GetLongLong(wxT("min_value"));
+			maxValue = sequence->GetLongLong(wxT("max_value"));
+			cacheValue = sequence->GetLongLong(wxT("cache_size"));
+			increment = sequence->GetLongLong(wxT("increment_by"));
+			cycled = sequence->GetBool(wxT("cycle"));
+
+			delete sequence;
+		}
+	}
+	else
+	{
+		sequence = ExecuteSet(
+		               wxT("SELECT last_value, min_value, max_value, cache_value, is_cycled, increment_by, is_called\n")
+		               wxT("  FROM ") + GetQuotedFullIdentifier());
+		if (sequence)
+		{
+			lastValue = sequence->GetLongLong(wxT("last_value"));
+			minValue = sequence->GetLongLong(wxT("min_value"));
+			maxValue = sequence->GetLongLong(wxT("max_value"));
+			cacheValue = sequence->GetLongLong(wxT("cache_value"));
+			increment = sequence->GetLongLong(wxT("increment_by"));
+			cycled = sequence->GetBool(wxT("is_cycled"));
+			called = sequence->GetBool(wxT("is_called"));
+			if (called)
+				nextValue = lastValue + increment;
+			else
+				nextValue = lastValue;
+
+			delete sequence;
+		}
 	}
 }
 
