@@ -2,6 +2,8 @@
 //
 // pgAdmin III - PostgreSQL Tools
 //
+// Copyright (C) 2016 - 2017, Mettenmeier GmbH
+// Copyright (C) 2016 - 2017, OpenSCG
 // Copyright (C) 2002 - 2016, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -13,9 +15,9 @@
 #define VERSION_H
 
 // Application Versions
-#define VERSION_STR     wxT("1.23.0 Dev")
-#define VERSION_NUM     1,23,0,0
-#define VERSION_PACKAGE 1.23.0-dev
+#define VERSION_STR     wxT("1.23.0.1")
+#define VERSION_NUM     1,23,0,1
+#define VERSION_PACKAGE 1.23.0.1
 
 #define PRERELEASE 1
 // #define BUILD "..."

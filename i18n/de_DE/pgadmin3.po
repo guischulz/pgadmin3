@@ -26548,7 +26548,7 @@ msgstr ""
 "\n"
 "Es kann sein, daß %s nicht wie erwartet funktioniert.\n"
 "\n"
-"Unterstützt Server Versionen sind %s bis %s."
+"Unterstützte Server Versionen sind %s bis %s."
 
 #: src/agent/dlgSchedule.cpp:281 src/agent/dlgSchedule.cpp:334
 #: pgadmin/agent/dlgSchedule.cpp:281 pgadmin/agent/dlgSchedule.cpp:334
